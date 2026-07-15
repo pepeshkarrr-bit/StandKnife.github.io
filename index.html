@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>StandKnife - Competitive Platform</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#0d0a1a;--bg2:#13102a;--bg3:#1a1535;--bg4:#221d42;--purple:#7c3aed;--purple2:#6d28d9;--pink:#c084fc;--pink2:#a855f7;--accent:#a78bfa;--text:#e2e0f0;--text2:#a5a0c0;--text3:#6b6590;--green:#22c55e;--red:#ef4444;--yellow:#eab308;--blue:#3b82f6;--border:#2a2450;--card:#161230;--glow:0 0 20px rgba(124,58,237,.3)}
+html{scroll-behavior:smooth}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden}
+a{text-decoration:none;color:inherit}
+::-webkit-scrollbar{width:6px}::-webkit-scrollbar-track{background:var(--bg2)}::-webkit-scrollbar-thumb{background:var(--purple);border-radius:3px}
+.navbar{position:fixed;top:0;left:0;right:0;z-index:1000;background:rgba(13,10,26,.92);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);padding:0 24px;height:64px;display:flex;align-items:center;justify-content:space-between}
+.nav-logo{display:flex;align-items:center;gap:10px;font-size:20px;font-weight:800;color:var(--pink)}
+.nav-logo svg{width:32px;height:32px}
+.nav-links{display:flex;gap:8px;align-items:center}
+.nav-links a{padding:8px 16px;border-radius:8px;font-size:14px;font-weight:500;transition:.2s;color:var(--text2)}
+.nav-links a:hover{background:var(--bg4);color:var(--text)}
+.nav-links .active{color:var(--pink);background:rgba(124,58,237,.15)}
+.nav-right{display:flex;align-items:center;gap:16px;position:relative}
+.btn-play{background:linear-gradient(135deg,var(--purple),var(--pink2));color:#fff!important;padding:10px 24px!important;border-radius:10px!important;font-weight:700!important;font-size:14px!important;border:none!important;box-shadow:0 4px 15px rgba(124,58,237,.4);cursor:pointer}
+.btn-play:hover{transform:translateY(-1px);box-shadow:0 6px 20px rgba(124,58,237,.5)!important}
+.section{padding:88px 24px 40px;max-width:1200px;margin:0 auto}
+.hero{text-align:center;padding:120px 24px 60px}
+.hero h1{font-size:52px;font-weight:900;background:linear-gradient(135deg,var(--pink),var(--purple),var(--accent));-webkit-background-clip:text;-webkit-text-fill-color:transparent;line-height:1.1;margin-bottom:16px}
+.hero p{font-size:18px;color:var(--text2);max-width:600px;margin:0 auto 32px;line-height:1.6}
+.hero-btns{display:flex;gap:16px;justify-content:center;flex-wrap:wrap}
+.grid{display:grid;gap:20px}.grid-2{grid-template-columns:repeat(2,1fr)}.grid-3{grid-template-columns:repeat(3,1fr)}.grid-4{grid-template-columns:repeat(4,1fr)}
+@media(max-width:768px){.grid-2,.grid-3,.grid-4{grid-template-columns:1fr}}
+.stat-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:20px;text-align:center}
+.stat-value{font-size:28px;font-weight:800;color:var(--pink)}
+.stat-label{font-size:13px;color:var(--text3);margin-top:4px}
+.card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:24px;transition:.2s}
+.card:hover{border-color:var(--purple);box-shadow:var(--glow)}
+.lb-row{display:flex;align-items:center;gap:16px;padding:14px 16px;border-bottom:1px solid rgba(42,36,80,.5);transition:.2s;cursor:pointer}
+.lb-row:hover{background:rgba(124,58,237,.05)}
+.lb-rank{width:32px;font-weight:800;font-size:16px;color:var(--text3);text-align:center}
+.lb-rank.gold{color:#ffd700}.lb-rank.silver{color:#c0c0c0}.lb-rank.bronze{color:#cd7f32}
+.lb-name{flex:1;font-weight:600}.lb-elo{font-weight:700;color:var(--accent)}.lb-games{font-size:13px;color:var(--text3)}
+.rank-badge{display:inline-flex;align-items:center;gap:4px;padding:3px 8px;border-radius:6px;font-size:12px;font-weight:600}
+.rank-bronze{background:rgba(205,127,50,.15);color:#cd7f32}.rank-silver{background:rgba(192,192,192,.15);color:#c0c0c0}.rank-gold{background:rgba(255,215,0,.15);color:#ffd700}.rank-platinum{background:rgba(0,200,200,.15);color:#00c8c8}.rank-diamond{background:rgba(124,58,237,.15);color:#a78bfa}.rank-legend{background:rgba(234,179,8,.2);color:#fbbf24}
+.badge{display:inline-flex;align-items:center;gap:4px;padding:3px 8px;border-radius:6px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px}
+.badge-vip{background:rgba(234,179,8,.15);color:#fbbf24}
+.match-card{display:flex;align-items:center;gap:16px;padding:16px;background:var(--card);border:1px solid var(--border);border-radius:12px;margin-bottom:8px;transition:.2s}
+.match-card:hover{border-color:var(--purple)}
+.match-result{width:4px;height:40px;border-radius:2px}.match-result.win{background:var(--green)}.match-result.loss{background:var(--red)}
+.match-info{flex:1}.match-map{font-weight:600;font-size:14px}.match-mode{font-size:12px;color:var(--text3)}
+.match-elo{font-weight:700;font-size:14px}.match-elo.pos{color:var(--green)}.match-elo.neg{color:var(--red)}
+.match-date{font-size:12px;color:var(--text3);text-align:right}.match-kd{font-size:13px;color:var(--text2)}
+.tab-btns{display:flex;gap:4px;margin-bottom:24px;background:var(--bg3);border-radius:10px;padding:4px;width:fit-content}
+.tab-btn{padding:10px 20px;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer;color:var(--text3);background:none;border:none}
+.tab-btn.active{background:var(--purple);color:#fff}
+.feature-card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:32px;text-align:center;transition:.2s}
+.feature-card:hover{border-color:var(--purple);transform:translateY(-4px);box-shadow:var(--glow)}
+.feature-icon{font-size:40px;margin-bottom:16px}.feature-title{font-size:17px;font-weight:700;margin-bottom:8px}.feature-desc{font-size:14px;color:var(--text2);line-height:1.5}
+.footer{background:var(--bg2);border-top:1px solid var(--border);padding:40px 24px;text-align:center;color:var(--text3);font-size:13px;margin-top:80px}
+.footer a{color:var(--accent)}
+.empty{text-align:center;padding:60px;color:var(--text3);font-size:15px}
+@media(max-width:768px){.hero h1{font-size:32px}.lb-row{flex-wrap:wrap;gap:8px}.match-card{flex-wrap:wrap}}
+
+.modal-overlay{display:none;position:fixed;inset:0;z-index:2000;background:rgba(0,0,0,.6);backdrop-filter:blur(8px);align-items:center;justify-content:center}
+.modal-overlay.active{display:flex}
+.modal{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:40px;max-width:440px;width:90%;position:relative;max-height:90vh;overflow-y:auto}
+.modal-close{position:absolute;top:16px;right:16px;background:none;border:none;color:var(--text3);font-size:24px;cursor:pointer;width:32px;height:32px;display:flex;align-items:center;justify-content:center;border-radius:8px}
+.modal-close:hover{background:var(--bg4);color:var(--text)}
+.modal h2{font-size:22px;font-weight:800;text-align:center;margin-bottom:4px;color:var(--pink)}
+.modal .subtitle{text-align:center;color:var(--text3);font-size:14px;margin-bottom:24px}
+.auth-tabs{display:flex;gap:4px;margin-bottom:24px;background:var(--bg3);border-radius:10px;padding:4px}
+.auth-tab{flex:1;padding:10px;text-align:center;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer;color:var(--text3);background:none;border:none;transition:.2s}
+.auth-tab.active{background:var(--purple);color:#fff}
+.form-group{margin-bottom:16px}
+.form-group label{display:block;font-size:13px;font-weight:600;color:var(--text2);margin-bottom:6px}
+.form-input{width:100%;padding:12px 16px;background:var(--bg3);border:1px solid var(--border);border-radius:10px;color:var(--text);font-size:14px;font-family:'Inter',sans-serif;transition:.2s}
+.form-input:focus{outline:none;border-color:var(--purple);box-shadow:0 0 0 3px rgba(124,58,237,.15)}
+.form-input::placeholder{color:var(--text3)}
+.btn{display:inline-flex;align-items:center;gap:8px;padding:12px 24px;border-radius:10px;font-size:14px;font-weight:700;cursor:pointer;border:none;transition:.2s;font-family:'Inter',sans-serif}
+.btn-primary{background:linear-gradient(135deg,var(--purple),var(--pink2));color:#fff;box-shadow:0 4px 15px rgba(124,58,237,.4);width:100%;justify-content:center}
+.btn-primary:hover{transform:translateY(-1px);box-shadow:0 6px 20px rgba(124,58,237,.5)}
+.btn-primary:disabled{opacity:.5;cursor:not-allowed;transform:none}
+.btn-secondary{background:var(--bg3);color:var(--text);border:1px solid var(--border)}
+.btn-secondary:hover{border-color:var(--purple)}
+.btn-sm{padding:10px 16px;font-size:13px}
+.verify-key{background:var(--bg3);border:1px solid var(--border);border-radius:10px;padding:16px;text-align:center;margin-bottom:16px}
+.verify-key .key-value{font-size:24px;font-weight:900;letter-spacing:4px;color:var(--pink);font-family:monospace;margin:12px 0;user-select:all}
+.verify-key .key-label{font-size:12px;color:var(--text3)}
+.verify-steps{background:var(--bg3);border-radius:12px;padding:16px;margin-bottom:16px}
+.verify-steps .step{display:flex;gap:10px;align-items:flex-start;margin-bottom:10px}
+.verify-steps .step:last-child{margin-bottom:0}
+.verify-steps .step-num{width:24px;height:24px;border-radius:50%;background:var(--purple);color:#fff;font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.verify-steps .step-text{font-size:13px;color:var(--text2);line-height:1.5}
+.verify-steps .step-text code{background:var(--bg4);padding:1px 6px;border-radius:4px;color:var(--pink);font-size:12px}
+.toast{position:fixed;bottom:24px;right:24px;padding:14px 24px;border-radius:12px;font-size:14px;font-weight:600;z-index:3000;transform:translateY(100px);opacity:0;transition:.3s}
+.toast.show{transform:translateY(0);opacity:1}
+.toast.success{background:var(--green);color:#fff}
+.toast.error{background:var(--red);color:#fff}
+.verified-badge{display:inline-flex;align-items:center;justify-content:center;width:18px;height:18px;border-radius:50%;background:linear-gradient(135deg,#3b82f6,#1d4ed8);margin-left:4px;vertical-align:middle}
+.verified-badge svg{width:12px;height:12px;fill:#fff}
+.verified-badge.owner{background:linear-gradient(135deg,var(--pink2),var(--purple))}
+.verified-badge.admin{background:linear-gradient(135deg,var(--red),#dc2626)}
+.nav-user{display:flex;align-items:center;gap:10px;cursor:pointer;padding:6px 12px;border-radius:10px;transition:.2s}
+.nav-user:hover{background:var(--bg4)}
+.nav-avatar{width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,var(--purple),var(--pink2));display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px;color:#fff}
+.nav-username{font-weight:600;font-size:14px}
+.nav-elo-badge{font-size:12px;padding:4px 10px;border-radius:8px;font-weight:700;background:rgba(167,139,250,.15);color:var(--accent)}
+.user-dropdown{display:none;position:absolute;top:64px;right:0;background:var(--card);border:1px solid var(--border);border-radius:12px;padding:8px;min-width:180px;z-index:1001}
+.user-dropdown div{padding:10px 14px;font-size:14px;cursor:pointer;border-radius:8px;transition:.15s}
+.user-dropdown div:hover{background:var(--bg4)}
+.user-dropdown .menu-label{padding:10px 14px;font-size:13px;color:var(--text3);cursor:default}
+.user-dropdown .menu-label:hover{background:none}
+.menu-divider{height:1px;background:var(--border);margin:4px 0}
+.owner-name{color:var(--red) !important;font-weight:700}
+.owner-badge{display:inline-flex;align-items:center;gap:3px;padding:2px 8px;border-radius:6px;font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.5px;margin-left:6px;background:linear-gradient(90deg,var(--red),var(--pink2),var(--red));background-size:200% 100%;animation:shimmer 2s linear infinite;color:#fff;vertical-align:middle}
+@keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
+.support-badge{display:inline-flex;align-items:center;gap:3px;padding:2px 8px;border-radius:6px;font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.5px;margin-left:6px;background:linear-gradient(90deg,var(--blue),#06b6d4,var(--blue));background-size:200% 100%;animation:shimmer 2s linear infinite;color:#fff;vertical-align:middle}
+</style>
+</head>
+<body>
+
+<nav class="navbar">
+  <a href="#home" class="nav-logo">
+    <svg viewBox="0 0 32 32" fill="none"><rect width="32" height="32" rx="8" fill="#7c3aed"/><path d="M8 24L16 8L24 24H20L16 16L12 24H8Z" fill="#fff"/></svg>
+    StandKnife
+  </a>
+  <div class="nav-links">
+    <a href="#home" class="active" onclick="scrollTo('home')">Главная</a>
+    <a href="#leaderboard" onclick="scrollTo('leaderboard')">Лидерборд</a>
+    <a href="#matches" onclick="scrollTo('matches')">Матчи</a>
+  </div>
+  <div class="nav-right" id="navRight">
+    <button class="btn-play" onclick="openModal('auth')">Войти</button>
+  </div>
+</nav>
+
+<div class="section" id="home">
+  <div class="hero">
+    <h1>Кибер-арена<br>StandKnife</h1>
+    <p>Соревнуйся с игроками со всего мира. 2v2, 5v5, турниры, рейтинг. Докажи свой уровень.</p>
+    <div class="hero-btns">
+      <a href="https://t.me/StandKnife_FacietBot" target="_blank" class="btn-play" style="font-size:16px;padding:14px 32px">&#9889; Начать играть</a>
+      <a href="#leaderboard" style="padding:14px 32px;border-radius:10px;font-weight:600;font-size:16px;background:var(--bg3);color:var(--text);border:1px solid var(--border)">Лидерборд</a>
+    </div>
+  </div>
+  <div class="grid grid-4" style="max-width:800px;margin:0 auto 60px">
+    <div class="stat-card"><div class="stat-value" id="totalPlayers">19</div><div class="stat-label">\u0418\u0433\u0440\u043E\u043A\u043E\u0432</div></div>
+    <div class="stat-card"><div class="stat-value" id="onlineCount">0</div><div class="stat-label">\u041E\u043D\u043B\u0430\u0439\u043D</div></div>
+    <div class="stat-card"><div class="stat-value" id="matchCount">-</div><div class="stat-label">Матчей</div></div>
+    <div class="stat-card"><div class="stat-value">5v5</div><div class="stat-label">Режимы</div></div>
+  </div>
+  <h2 style="text-align:center;margin-bottom:24px;font-size:24px;font-weight:800">Возможности</h2>
+  <div class="grid grid-3" style="max-width:900px;margin:0 auto">
+    <div class="feature-card"><div class="feature-icon">&#9876;&#65039;</div><div class="feature-title">Матчмейкинг</div><div class="feature-desc">2v2 и 5v5 матчи с автоматическим подбором игроков</div></div>
+    <div class="feature-card"><div class="feature-icon">&#127942;</div><div class="feature-title">Система рангов</div><div class="feature-desc">Bronze до Legend. Поднимай свой ранг!</div></div>
+    <div class="feature-card"><div class="feature-icon">&#128200;</div><div class="feature-title">Статистика</div><div class="feature-desc">K/D, винрейт, прогресс ELO, история матчей</div></div>
+    <div class="feature-card"><div class="feature-icon">&#128101;</div><div class="feature-title">Пати</div><div class="feature-desc">Создавай команды с друзьями</div></div>
+    <div class="feature-card"><div class="feature-icon">&#127775;</div><div class="feature-title">VIP</div><div class="feature-desc">x1.5/x2/x2.5 множитель ELO</div></div>
+    <div class="feature-card"><div class="feature-icon">&#128293;</div><div class="feature-title">Серии побед</div><div class="feature-desc">Бонусы за 3/5/10 побед подряд</div></div>
+  </div>
+  <h2 style="text-align:center;margin:60px 0 24px;font-size:24px;font-weight:800">Топ игроков</h2>
+  <div class="card" style="max-width:700px;margin:0 auto" id="homeTop"></div>
+</div>
+
+<div class="section" id="leaderboard">
+  <h1 style="font-size:32px;font-weight:800;margin-bottom:8px">&#127942; Лидерборд</h1>
+  <p style="color:var(--text2);margin-bottom:24px">Топ игроков по ELO рейтингу</p>
+  <div class="card" id="lbCard"></div>
+</div>
+
+<div class="section" id="matches">
+  <h1 style="font-size:32px;font-weight:800;margin-bottom:8px">&#128197; История матчей</h1>
+  <p style="color:var(--text2);margin-bottom:24px">Последние матчи на платформе</p>
+  <div class="tab-btns">
+    <button class="tab-btn active" onclick="filterM('all',this)">Все</button>
+    <button class="tab-btn" onclick="filterM('2v2',this)">2v2</button>
+    <button class="tab-btn" onclick="filterM('5v5',this)">5v5</button>
+  </div>
+  <div id="matchList"></div>
+</div>
+
+<div class="footer">
+  <p>StandKnife &copy; 2026 &bull; Competitive Gaming Platform</p>
+  <p style="margin-top:8px"><a href="https://t.me/StandKnife_FacietBot">Telegram Bot</a> &bull; <a href="https://t.me/KnifeNewsBot">Cards Bot</a></p>
+</div>
+
+<div class="modal-overlay" id="modal-auth">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal('auth')">&times;</button>
+    <h2>Добро пожаловать</h2>
+    <p class="subtitle">Войдите или создайте аккаунт</p>
+    <div class="auth-tabs">
+      <button class="auth-tab active" onclick="switchAuthTab('login',this)">Вход</button>
+      <button class="auth-tab" onclick="switchAuthTab('register',this)">Регистрация</button>
+    </div>
+    <div id="authLogin">
+      <div class="form-group">
+        <label>Nickname или Email</label>
+        <input class="form-input" id="loginNick" placeholder="Ваш никнейм или email">
+      </div>
+      <div class="form-group">
+        <label>Пароль</label>
+        <input class="form-input" type="password" id="loginPass" placeholder="&#8226;&#8226;&#8226;&#8226;&#8226;&#8226;&#8226;&#8226;">
+      </div>
+      <button class="btn btn-primary" onclick="doLogin()">Войти</button>
+      <p style="text-align:center;margin-top:16px;font-size:12px;color:var(--text3)">Нет аккаунта? <a href="#" onclick="switchAuthTab('register',document.querySelectorAll('.auth-tab')[1]);return false" style="color:var(--accent)">Зарегистрируйтесь</a></p>
+    </div>
+    <div id="authRegister" style="display:none">
+      <div class="form-group">
+        <label>Nickname</label>
+        <input class="form-input" id="regNick" placeholder="Ваш никнейм">
+      </div>
+      <div class="form-group">
+        <label>Email</label>
+        <input class="form-input" id="regEmail" placeholder="your@email.com" type="email">
+      </div>
+      <div class="form-group">
+        <label>Пароль</label>
+        <input class="form-input" type="password" id="regPass" placeholder="Минимум 6 символов">
+      </div>
+      <div class="form-group">
+        <label>Ключ верификации</label>
+        <div class="verify-key">
+          <div class="key-label">Нажмите для генерации ключа</div>
+          <div class="key-value" id="regKeyDisplay">--------</div>
+          <button class="btn btn-secondary btn-sm" onclick="generateKey()" style="margin-top:8px">&#9889; Генерировать ключ</button>
+        </div>
+        <div class="verify-steps">
+          <div class="step"><div class="step-num">1</div><div class="step-text">Скопируйте ключ выше</div></div>
+          <div class="step"><div class="step-num">2</div><div class="step-text">Откройте <a href="https://t.me/KnifeNewsBot" target="_blank" style="color:var(--accent)">@KnifeNewsBot</a></div></div>
+          <div class="step"><div class="step-num">3</div><div class="step-text">Отправьте: <code>/code ВАШ-КЛЮЧ</code></div></div>
+        </div>
+      </div>
+      <button class="btn btn-primary" onclick="doRegister()" id="btnRegister" disabled>Создать аккаунт</button>
+      <p style="text-align:center;margin-top:16px;font-size:12px;color:var(--text3)">Уже есть аккаунт? <a href="#" onclick="switchAuthTab('login',document.querySelectorAll('.auth-tab')[0]);return false" style="color:var(--accent)">Войдите</a></p>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modal-settings">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal('settings')">&times;</button>
+    <h2>&#9881;&#65039; Настройки</h2>
+    <p class="subtitle">Управление профилем</p>
+
+    <div id="settingsMain">
+      <div class="form-group">
+        <label>Nickname</label>
+        <div style="display:flex;gap:8px">
+          <input class="form-input" id="settingsNick" placeholder="Ваш никнейм" style="flex:1">
+          <button class="btn btn-primary" style="width:auto;padding:10px 20px" onclick="changeNick()">Сохранить</button>
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Email</label>
+        <input class="form-input" id="settingsEmail" placeholder="your@email.com" type="email" disabled style="opacity:.5">
+      </div>
+      <div style="background:var(--bg3);border-radius:12px;padding:16px;margin-bottom:16px">
+        <div style="font-weight:700;margin-bottom:8px">&#127942; Место в топе</div>
+        <div style="font-size:14px;color:var(--text2)">Ваш текущий рейтинг: <span id="settingsRank" style="color:var(--pink);font-weight:700">-</span></div>
+        <div style="font-size:13px;color:var(--text3);margin-top:4px">ELO: <span id="settingsElo">0</span> &bull; Ранг: <span id="settingsRankName">Bronze I</span></div>
+      </div>
+      <div style="background:var(--bg3);border-radius:12px;padding:16px;margin-bottom:16px;cursor:pointer" onclick="window.open('https://t.me/KnifeArenaSupport','_blank')">
+        <div style="font-weight:700;margin-bottom:4px">&#128172; Поддержка</div>
+        <div style="font-size:13px;color:var(--text3)">Связаться с @KnifeArenaSupport</div>
+      </div>
+      <div style="background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.2);border-radius:12px;padding:16px;cursor:pointer" onclick="doLogout();closeModal('settings')">
+        <div style="font-weight:700;color:var(--red)">&#128682; Выйти из аккаунта</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<div class="modal-overlay" id="modal-profile">
+  <div class="modal" style="max-width:480px">
+    <button class="modal-close" onclick="closeModal('profile')">&times;</button>
+    <div id="profileContent"></div>
+  </div>
+</div>
+
+<script>
+let DATA = {};
+let allM = [];
+
+fetch('data.json').then(r=>r.json()).then(d=>{
+  DATA=d;
+  allM=DATA.matches||[];
+  document.getElementById('matchCount').textContent=allM.length;
+  renderLB();renderM('all');updateOnline();
+}).catch(e=>console.error('Load error:',e));
+
+const ADMIN_USER = {nickname:'KnifeArena',password:'isIam123',id:8906635938,sk_id:'1234',verified:1,admin:1,owner:1,elo:27,kills:0,deaths:0,assists:0,games:1,wins:1,vip_level:3,rank_name:'Bronze I',rank_icon:'\uD83E\uDD49',rank_cls:'rank-bronze',k_d:0,winrate:100};
+
+function getUsers(){return JSON.parse(localStorage.getItem('sk_users')||'[]')}
+function saveUsers(u){localStorage.setItem('sk_users',JSON.stringify(u))}
+function getCurrentUser(){return JSON.parse(localStorage.getItem('sk_current')||'null')}
+function saveCurrentUser(u){localStorage.setItem('sk_current',JSON.stringify(u))}
+
+function showToast(msg,type){
+  let t=document.getElementById('toast');
+  t.textContent=msg;
+  t.className='toast '+type+' show';
+  setTimeout(()=>t.classList.remove('show'),3000);
+}
+
+function genKey(){
+  const chars='ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+  let k='SK-';
+  for(let i=0;i<8;i++)k+=chars[Math.floor(Math.random()*chars.length)];
+  return k;
+}
+
+function switchAuthTab(tab,el){
+  document.querySelectorAll('.auth-tab').forEach(t=>t.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('authLogin').style.display=tab==='login'?'block':'none';
+  document.getElementById('authRegister').style.display=tab==='register'?'block':'none';
+}
+
+let currentRegKey='';
+function generateKey(){
+  currentRegKey=genKey();
+  document.getElementById('regKeyDisplay').textContent=currentRegKey;
+  document.getElementById('btnRegister').disabled=false;
+  showToast('Ключ создан! Сохраните его','success');
+}
+
+function doLogin(){
+  let nick=document.getElementById('loginNick').value.trim();
+  let pass=document.getElementById('loginPass').value;
+  if(!nick||!pass){showToast('Заполните все поля','error');return}
+  if(nick===ADMIN_USER.nickname&&pass===ADMIN_USER.password){
+    let u=Object.assign({},ADMIN_USER,{loginAt:Date.now()});
+    saveCurrentUser(u);
+    closeModal('auth');
+    updateNav();
+    showToast('Добро пожаловать, KnifeArena!','success');
+    return;
+  }
+  let users=getUsers();
+  let user=users.find(function(u){return(u.nickname===nick||u.email===nick)&&u.password===pass});
+  if(!user){showToast('Неверный никнейм или пароль','error');return}
+  let u=Object.assign({},user,{loginAt:Date.now()});
+  delete u.password;
+  saveCurrentUser(u);
+  closeModal('auth');
+  updateNav();
+  showToast('Добро пожаловать, '+user.nickname+'!','success');
+}
+
+function doRegister(){
+  let nick=document.getElementById('regNick').value.trim();
+  let email=document.getElementById('regEmail').value.trim();
+  let pass=document.getElementById('regPass').value;
+  if(!nick||!email||!pass){showToast('Заполните все поля','error');return}
+  if(pass.length<6){showToast('Пароль минимум 6 символов','error');return}
+  if(!currentRegKey){showToast('Сгенерируйте ключ','error');return}
+  let users=getUsers();
+  if(users.find(function(u){return u.nickname===nick})){showToast('Никнейм уже занят','error');return}
+  if(users.find(function(u){return u.email===email})){showToast('Email уже занят','error');return}
+  var newUser={id:Date.now(),nickname:nick,email:email,password:pass,sk_id:'',verified:0,key:currentRegKey,elo:0,kills:0,deaths:0,assists:0,games:0,wins:0,vip_level:0,rank_name:'Bronze I',rank_icon:'\u{1F949}',rank_cls:'rank-bronze',k_d:0,winrate:0,created:Date.now()};
+  users.push(newUser);
+  saveUsers(users);
+  showToast('Аккаунт создан! Теперь войдите','success');
+  switchAuthTab('login',document.querySelectorAll('.auth-tab')[0]);
+}
+
+function doLogout(){
+  localStorage.removeItem('sk_current');
+  updateNav();
+  showToast('Вы вышли','success');
+}
+
+function updateNav(){
+  var navRight=document.getElementById('navRight');
+  var user=getCurrentUser();
+  if(user){
+    var nameColor=isOwner(user)?'color:var(--red);':isSupport(user)?'color:var(--blue);':'';
+    var ob=ownerBadge(user);
+    navRight.innerHTML='<div class="nav-elo-badge">'+(user.elo||0)+' ELO</div><div class="nav-user" onclick="toggleUserMenu()"><div class="nav-avatar">'+((user.nickname||'?')[0].toUpperCase())+'</div><span class="nav-username" style="'+nameColor+'">'+user.nickname+ob+'</span></div><div id="userMenu" class="user-dropdown"><div class="menu-label">'+(user.email||'')+'</div><div class="menu-divider"></div><div onclick="openSettings()">\u2699\uFE0F \u041D\u0430\u0441\u0442\u0440\u043E\u0439\u043A\u0438</div><div onclick="doLogout()">\uD83D\uDEAB \u0412\u044B\u0439\u0442\u0438</div></div>';
+  }else{
+    navRight.innerHTML='<button class="btn-play" onclick="openModal(\'auth\')">Войти</button>';
+  }
+}
+
+function toggleUserMenu(){
+  var m=document.getElementById('userMenu');
+  if(m)m.style.display=m.style.display==='none'?'block':'none';
+}
+document.addEventListener('click',function(e){
+  var m=document.getElementById('userMenu');
+  var u=document.querySelector('.nav-user');
+  if(m&&u&&!u.contains(e.target)&&!m.contains(e.target))m.style.display='none';
+});
+
+function openSettings(){
+  var user=getCurrentUser();
+  if(!user)return;
+  document.getElementById('settingsNick').value=user.nickname||'';
+  document.getElementById('settingsEmail').value=user.email||'';
+  document.getElementById('settingsElo').textContent=user.elo||0;
+  document.getElementById('settingsRankName').textContent=user.rank_name||'Bronze I';
+  document.getElementById('settingsRank').textContent='#'+(user.rank_pos||'-');
+  openModal('settings');
+}
+
+function changeNick(){
+  var user=getCurrentUser();
+  if(!user)return;
+  var newNick=document.getElementById('settingsNick').value.trim();
+  if(!newNick){showToast('Введите никнейм','error');return}
+  if(newNick.length<2){showToast('Минимум 2 символа','error');return}
+  user.nickname=newNick;
+  saveCurrentUser(user);
+  var users=getUsers();
+  var idx=users.findIndex(function(u){return u.id===user.id});
+  if(idx>=0){users[idx].nickname=newNick;saveUsers(users)}
+  updateNav();
+  showToast('Никнейм изменён!','success');
+}
+
+function verifiedBadge(user){
+  if(!user||!user.owner)return'';
+  return '<span class="verified-badge owner"><svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></span>';
+}
+
+function ownerBadge(user){
+  if(!user)return'';
+  if(isOwner(user))return '<span class="owner-badge">\uD83D\uDC51 OWNER</span>';
+  if(isSupport(user))return '<span class="support-badge">\uD83D\uDD27 \u0422\u0435\u0445\u041F\u043E\u0434\u0434\u0435\u0440\u0436\u043A\u0430</span>';
+  return'';
+}
+
+function isOwner(u){return u&&u.id===8906635938}
+function isSupport(u){return u&&u.nickname==='BOT'}
+
+function fmtElo(e){return e>=0?'+'+e:''+e}
+
+function renderLB(){
+  var html='';
+  (DATA.users||[]).forEach(function(u){
+    var rc=u.rank_cls==='gold'?'gold':u.rank_cls==='silver'?'silver':u.rank_cls==='bronze'?'bronze':'';
+    var vip=u.vip_level>0?'<span class="badge badge-vip" style="margin-left:6px">VIP'+u.vip_level+'</span>':'';
+    var ob=ownerBadge(u);
+    var nameStyle=isOwner(u)?'style="color:var(--red);font-weight:700"':isSupport(u)?'style="color:var(--blue);font-weight:700"':'';
+    html+='<div class="lb-row" onclick="showProfile('+u.id+')" style="cursor:pointer"><div class="lb-rank '+rc+'">'+u.rank_pos+'</div><div style="width:32px;height:32px;border-radius:50%;background:var(--purple);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:12px">'+((u.nickname||'?')[0].toUpperCase())+'</div><div class="lb-name"><span '+nameStyle+'>'+(u.nickname||u.username||'ID '+u.id)+'</span>'+ob+' '+vip+'<div style="font-size:12px;color:var(--text3)"><span class="rank-badge '+u.rank_cls+'">'+u.rank_icon+' '+u.rank_name+'</span> SK'+(u.sk_id||'')+'</div></div><div class="lb-elo">'+(u.elo||0)+' ELO</div><div class="lb-games">'+(u.games||0)+' \u0438\u0433\u0440 \u00b7 '+u.winrate+'% WR</div></div>';
+  });
+  document.getElementById('lbCard').innerHTML=html||'<div class="empty">Пока нет игроков</div>';
+  document.getElementById('homeTop').innerHTML=(DATA.users||[]).slice(0,5).map(function(u,i){
+    var medals=['\uD83E\uDD47','\uD83E\uDD48','\uD83E\uDD49','',''];
+    var ob=ownerBadge(u);
+    var nameStyle=isOwner(u)?'style="color:var(--red);font-weight:700"':isSupport(u)?'style="color:var(--blue);font-weight:700"':'';
+    return '<div style="display:flex;align-items:center;gap:12px;padding:12px 0'+(i<4?';border-bottom:1px solid var(--border)':'')+';cursor:pointer" onclick="showProfile('+u.id+')"><div style="width:28px;text-align:center;font-weight:800;color:var(--text3)">'+(medals[i]||(i+1))+'</div><div style="width:32px;height:32px;border-radius:50%;background:var(--purple);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:12px">'+((u.nickname||'?')[0].toUpperCase())+'</div><div '+nameStyle+'>'+(u.nickname||'ID '+u.id)+ob+'</div><div style="font-weight:700;color:var(--accent)">'+(u.elo||0)+' ELO</div></div>';
+  }).join('');
+}
+
+function renderM(filter){
+  var list=allM;
+  if(filter==='2v2')list=allM.filter(function(m){return m.mode==='2v2'});
+  if(filter==='5v5')list=allM.filter(function(m){return m.mode==='5v5'});
+  var html='';
+  list.slice(0,30).forEach(function(m){
+    var w=m.result==='win';
+    var d='';try{d=new Date(m.created_at);d=d.toLocaleDateString('ru-RU')}catch(e){}
+    html+='<div class="match-card"><div class="match-result '+(w?'win':'loss')+'"></div><div class="match-info"><div class="match-map">'+(m.map_name||'?')+'</div><div class="match-mode">'+(m.mode||'?')+' &bull; '+(m.nickname||'ID '+m.user_id)+'</div></div><div style="text-align:center"><div class="match-kd">'+m.kills+'/'+m.deaths+'/'+m.assists+'</div></div><div style="text-align:right"><div class="match-elo '+(m.elo_change>=0?'pos':'neg')+'">'+fmtElo(m.elo_change)+' ELO</div><div class="match-date">'+d+'</div></div></div>';
+  });
+  document.getElementById('matchList').innerHTML=html||'<div class="empty">Пока нет матчей</div>';
+}
+
+function filterM(f,el){
+  document.querySelectorAll('.tab-btn').forEach(function(b){b.classList.remove('active')});
+  el.classList.add('active');
+  renderM(f);
+}
+
+function scrollTo(id){document.getElementById(id).scrollIntoView({behavior:'smooth'})}
+function openModal(id){document.getElementById('modal-'+id).classList.add('active')}
+function closeModal(id){document.getElementById('modal-'+id).classList.remove('active')}
+document.getElementById('modal-auth').addEventListener('click',function(e){if(e.target===this)closeModal('auth')});
+document.getElementById('modal-settings').addEventListener('click',function(e){if(e.target===this)closeModal('settings')});
+document.getElementById('modal-profile').addEventListener('click',function(e){if(e.target===this)closeModal('profile')});
+
+function showProfile(uid){
+  var users=DATA.users||[];
+  var u=null;
+  for(var i=0;i<users.length;i++){if(users[i].id===uid){u=users[i];break}}
+  if(!u)return;
+  var matches=(DATA.matches||[]).filter(function(m){return m.user_id===uid});
+  var wins=0,losses=0,totalK=0,totalD=0,totalA=0;
+  matches.forEach(function(m){
+    if(m.result==='win')wins++;else losses++;
+    totalK+=m.kills||0;totalD+=m.deaths||0;totalA+=m.assists||0;
+  });
+  var totalGames=u.games||matches.length;
+  var kdr=totalGames>0?(totalK/Math.max(totalD,1)).toFixed(1):'0.0';
+  var nameColor=isOwner(u)?'color:var(--red);font-weight:700;font-size:20px':isSupport(u)?'color:var(--blue);font-weight:700;font-size:20px':'font-weight:700;font-size:20px';
+  var ob=ownerBadge(u);
+  var vip=u.vip_level>0?'<span class="badge badge-vip" style="margin-left:8px">VIP'+u.vip_level+'</span>':'';
+  var html='<div style="text-align:center;margin-bottom:20px">'+
+    '<div style="width:64px;height:64px;border-radius:50%;background:linear-gradient(135deg,var(--purple),var(--pink2));display:flex;align-items:center;justify-content:center;font-size:24px;font-weight:700;color:#fff;margin:0 auto 12px">'+((u.nickname||'?')[0].toUpperCase())+'</div>'+
+    '<div><span style="'+nameColor+'">'+(u.nickname||'ID '+u.id)+'</span>'+ob+vip+'</div>'+
+    '<div style="color:var(--text3);font-size:13px;margin-top:4px">SK'+(u.sk_id||'')+' &bull; '+u.rank_name+'</div>'+
+    '<div style="margin-top:8px"><span class="rank-badge '+u.rank_cls+'">'+u.rank_icon+' '+u.rank_name+'</span></div>'+
+    '</div>';
+  html+='<div style="display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:16px">'+
+    '<div class="stat-card" style="padding:14px"><div class="stat-value" style="font-size:22px">'+u.elo+'</div><div class="stat-label">ELO</div></div>'+
+    '<div class="stat-card" style="padding:14px"><div class="stat-value" style="font-size:22px">#'+u.rank_pos+'</div><div class="stat-label">\u041C\u0435\u0441\u0442\u043E \u0432 \u0442\u043E\u043F\u0435</div></div>'+
+    '<div class="stat-card" style="padding:14px"><div class="stat-value" style="font-size:22px">'+totalGames+'</div><div class="stat-label">\u041C\u0430\u0442\u0447\u0435\u0439</div></div>'+
+    '<div class="stat-card" style="padding:14px"><div class="stat-value" style="font-size:22px">'+u.winrate+'%</div><div class="stat-label">\u0412\u0438\u043D\u0440\u0435\u0439\u0442</div></div>'+
+    '</div>';
+  html+='<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:16px">'+
+    '<div style="text-align:center"><div style="font-size:20px;font-weight:800;color:var(--green)">'+(u.kills||0)+'</div><div style="font-size:11px;color:var(--text3)">\u0423\u0431\u0438\u0439\u0441\u0442\u0432\u0430</div></div>'+
+    '<div style="text-align:center"><div style="font-size:20px;font-weight:800;color:var(--red)">'+(u.deaths||0)+'</div><div style="font-size:11px;color:var(--text3)">\u0421\u043C\u0435\u0440\u0442\u0435\u0439</div></div>'+
+    '<div style="text-align:center"><div style="font-size:20px;font-weight:800;color:var(--accent)">'+(u.assists||0)+'</div><div style="font-size:11px;color:var(--text3)">\u0410\u0441\u0441\u0438\u0441\u0442\u043E\u0432</div></div>'+
+    '<div style="text-align:center"><div style="font-size:20px;font-weight:800;color:var(--yellow)">'+kdr+'</div><div style="font-size:11px;color:var(--text3)">K/D</div></div>'+
+    '</div>';
+  if(matches.length>0){
+    html+='<div style="font-weight:700;margin-bottom:8px">\u041F\u043E\u0441\u043B\u0435\u0434\u043D\u0438\u0435 \u043C\u0430\u0442\u0447\u0438</div>';
+    matches.slice(0,5).forEach(function(m){
+      var w=m.result==='win';
+      var d='';try{d=new Date(m.created_at);d=d.toLocaleDateString('ru-RU')}catch(e){}
+      html+='<div class="match-card" style="margin-bottom:6px"><div class="match-result '+(w?'win':'loss')+'"></div>'+
+        '<div class="match-info"><div class="match-map">'+(m.map_name||'?')+'</div><div class="match-mode">'+(m.mode||'?')+'</div></div>'+
+        '<div style="text-align:center"><div class="match-kd">'+m.kills+'/'+m.deaths+'/'+m.assists+'</div></div>'+
+        '<div style="text-align:right"><div class="match-elo '+(m.elo_change>=0?'pos':'neg')+'">'+fmtElo(m.elo_change)+' ELO</div><div class="match-date">'+d+'</div></div></div>';
+    });
+  }
+  document.getElementById('profileContent').innerHTML=html;
+  openModal('profile');
+}
+
+updateNav();
+
+function updateOnline(){
+  var el1=document.getElementById('onlineCount');
+  var el2=document.getElementById('totalPlayers');
+  if(el1)el1.textContent=DATA.online||0;
+  if(el2)el2.textContent=DATA.total||0;
+}
+
+function refreshData(){
+  fetch('data.json?t='+Date.now()).then(r=>r.json()).then(d=>{
+    DATA=d;
+    allM=d.matches||[];
+    document.getElementById('matchCount').textContent=allM.length;
+    renderLB();renderM('all');updateOnline();
+  }).catch(e=>{});
+}
+setInterval(refreshData,30000);
+</script>
+</body>
+</html>
